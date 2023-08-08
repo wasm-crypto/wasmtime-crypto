@@ -11,6 +11,7 @@ use std::io::Write;
 use std::path::{Component, Path, PathBuf};
 use std::thread;
 use std::time::Duration;
+use std::sync::Arc;
 use wasmtime::{
     AsContextMut, Engine, Func, GuestProfiler, Linker, Module, Store, StoreLimits,
     StoreLimitsBuilder, UpdateDeadline, Val, ValType,
@@ -19,19 +20,8 @@ use wasmtime_cli_flags::{CommonOptions, WasiModules};
 use wasmtime_wasi::maybe_exit_on_error;
 use wasmtime_wasi::sync::{ambient_authority, Dir, TcpListener, WasiCtxBuilder};
 
-#[cfg(any(
-    feature = "wasi-crypto",
-    feature = "wasi-nn",
-    feature = "wasi-threads",
-    feature = "wasi-http"
-))]
-use std::sync::Arc;
-
 #[cfg(feature = "wasi-nn")]
 use wasmtime_wasi_nn::WasiNnCtx;
-
-#[cfg(feature = "wasi-crypto")]
-use wasmtime_wasi_crypto::WasiCryptoCtx;
 
 #[cfg(feature = "wasi-threads")]
 use wasmtime_wasi_threads::WasiThreadsCtx;
@@ -676,8 +666,6 @@ impl RunCommand {
 #[derive(Default, Clone)]
 struct Host {
     wasi: Option<wasmtime_wasi::WasiCtx>,
-    #[cfg(feature = "wasi-crypto")]
-    wasi_crypto: Option<Arc<WasiCryptoCtx>>,
     #[cfg(feature = "wasi-nn")]
     wasi_nn: Option<Arc<WasiNnCtx>>,
     #[cfg(feature = "wasi-threads")]
@@ -735,28 +723,6 @@ fn populate_with_wasi(
         store.data_mut().wasi = Some(builder.build());
     }
 
-    if wasi_modules.wasi_crypto {
-        #[cfg(not(feature = "wasi-crypto"))]
-        {
-            bail!("Cannot enable wasi-crypto when the binary is not compiled with this feature.");
-        }
-        #[cfg(feature = "wasi-crypto")]
-        {
-            wasmtime_wasi_crypto::add_to_linker(linker, |host| {
-                // This WASI proposal is currently not protected against
-                // concurrent access--i.e., when wasi-threads is actively
-                // spawning new threads, we cannot (yet) safely allow access and
-                // fail if more than one thread has `Arc`-references to the
-                // context. Once this proposal is updated (as wasi-common has
-                // been) to allow concurrent access, this `Arc::get_mut`
-                // limitation can be removed.
-                Arc::get_mut(host.wasi_crypto.as_mut().unwrap())
-                    .expect("wasi-crypto is not implemented with multi-threading support")
-            })?;
-            store.data_mut().wasi_crypto = Some(Arc::new(WasiCryptoCtx::new()));
-        }
-    }
-
     if wasi_modules.wasi_nn {
         #[cfg(not(feature = "wasi-nn"))]
         {
@@ -765,7 +731,13 @@ fn populate_with_wasi(
         #[cfg(feature = "wasi-nn")]
         {
             wasmtime_wasi_nn::add_to_linker(linker, |host| {
-                // See documentation for wasi-crypto for why this is needed.
+                // This WASI proposal is currently not protected against
+                // concurrent access--i.e., when wasi-threads is actively
+                // spawning new threads, we cannot (yet) safely allow access and
+                // fail if more than one thread has `Arc`-references to the
+                // context. Once this proposal is updated (as wasi-common has
+                // been) to allow concurrent access, this `Arc::get_mut`
+                // limitation can be removed.
                 Arc::get_mut(host.wasi_nn.as_mut().unwrap())
                     .expect("wasi-nn is not implemented with multi-threading support")
             })?;

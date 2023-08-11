@@ -2,12 +2,12 @@
 name = "wasmtime-cli"
 version.workspace = true
 authors.workspace = true
-description = "Command-line interface for Wasmtime"
+description = "Command-line interface for Wasmtime with the crypto extensions"
 license = "Apache-2.0 WITH LLVM-exception"
 documentation = "https://bytecodealliance.github.io/wasmtime/cli.html"
 categories = ["wasm"]
 keywords = ["webassembly", "wasm"]
-repository = "https://github.com/bytecodealliance/wasmtime"
+repository = "https://github.com/wasm-crypto/wasmtime-crypto"
 readme = "README.md"
 edition.workspace = true
 default-run = "wasmtime"

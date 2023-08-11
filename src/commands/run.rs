@@ -9,9 +9,9 @@ use std::ffi::OsString;
 use std::fs::File;
 use std::io::Write;
 use std::path::{Component, Path, PathBuf};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
-use std::sync::Arc;
 use wasmtime::{
     AsContextMut, Engine, Func, GuestProfiler, Linker, Module, Store, StoreLimits,
     StoreLimitsBuilder, UpdateDeadline, Val, ValType,
@@ -28,6 +28,8 @@ use wasmtime_wasi_threads::WasiThreadsCtx;
 
 #[cfg(feature = "wasi-http")]
 use wasmtime_wasi_http::WasiHttp;
+
+use wasi_crypto::wasmtime_interfaces::WasiCryptoCtx;
 
 fn parse_module(s: OsString) -> anyhow::Result<PathBuf> {
     // Do not accept wasmtime subcommand names as the module name
@@ -672,6 +674,7 @@ struct Host {
     wasi_threads: Option<Arc<WasiThreadsCtx<Host>>>,
     #[cfg(feature = "wasi-http")]
     wasi_http: Option<WasiHttp>,
+    wasi_crypto: Option<Arc<WasiCryptoCtx>>,
     limits: StoreLimits,
     guest_profiler: Option<Arc<GuestProfiler>>,
 }
@@ -780,6 +783,27 @@ fn populate_with_wasi(
             store.data_mut().wasi_http = Some(w_http);
         }
     }
+
+    if wasi_modules.wasi_crypto {
+        add_wasi_crypto_to_linker(linker, |host| {
+            Arc::get_mut(host.wasi_crypto.as_mut().unwrap())
+                .expect("wasi-crypto has not been tested with multi-threading support")
+        })?;
+    }
+
+    Ok(())
+}
+
+fn add_wasi_crypto_to_linker<T>(
+    linker: &mut Linker<T>,
+    get_cx: impl Fn(&mut T) -> &mut WasiCryptoCtx + Send + Sync + Copy + 'static,
+) -> anyhow::Result<()> {
+    use wasi_crypto::wasmtime_interfaces::wasi_modules as w;
+
+    w::wasi_ephemeral_crypto_common::add_to_linker(linker, get_cx)?;
+    w::wasi_ephemeral_crypto_asymmetric_common::add_to_linker(linker, get_cx)?;
+    w::wasi_ephemeral_crypto_signatures::add_to_linker(linker, get_cx)?;
+    w::wasi_ephemeral_crypto_symmetric::add_to_linker(linker, get_cx)?;
 
     Ok(())
 }

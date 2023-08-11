@@ -71,6 +71,10 @@ pub const SUPPORTED_WASI_MODULES: &[(&str, &str)] = &[
         "experimental-wasi-http",
         "enables support for the WASI HTTP APIs (experimental), see https://github.com/WebAssembly/wasi-http",
     ),
+    (
+        "experimental-wasi-crypto",
+        "enables support for the WASI Crypto APIs (experimental), see https://github.com/WebAssembly/wasi-crypto",
+    ),
 ];
 
 fn init_file_per_thread_logger(prefix: &'static str) {
@@ -520,6 +524,7 @@ fn parse_wasi_modules(modules: &str) -> Result<WasiModules> {
                 "experimental-wasi-nn" => Ok(wasi_modules.wasi_nn = enable),
                 "experimental-wasi-threads" => Ok(wasi_modules.wasi_threads = enable),
                 "experimental-wasi-http" => Ok(wasi_modules.wasi_http = enable),
+                "experimental-wasi-crypto" => Ok(wasi_modules.wasi_crypto = enable),
                 "default" => bail!("'default' cannot be specified with other WASI modules"),
                 _ => bail!("unsupported WASI module '{}'", module),
             };
@@ -554,6 +559,9 @@ pub struct WasiModules {
 
     /// Enable the experimental wasi-http implementation
     pub wasi_http: bool,
+
+    /// Enable the experimental wasi-crypto implementation
+    pub wasi_crypto: bool,
 }
 
 impl Default for WasiModules {
@@ -563,6 +571,7 @@ impl Default for WasiModules {
             wasi_nn: false,
             wasi_threads: false,
             wasi_http: false,
+            wasi_crypto: false,
         }
     }
 }
@@ -575,6 +584,7 @@ impl WasiModules {
             wasi_nn: false,
             wasi_threads: false,
             wasi_http: false,
+            wasi_crypto: false,
         }
     }
 }
@@ -743,6 +753,7 @@ mod test {
                 wasi_nn: false,
                 wasi_threads: false,
                 wasi_http: false,
+                wasi_crypto: false,
             }
         );
     }
@@ -757,6 +768,7 @@ mod test {
                 wasi_nn: false,
                 wasi_threads: false,
                 wasi_http: false
+                wasi_crypto: false,
             }
         );
     }
@@ -775,6 +787,7 @@ mod test {
                 wasi_nn: true,
                 wasi_threads: false,
                 wasi_http: false,
+                wasi_crypto: false,
             }
         );
     }
@@ -790,6 +803,7 @@ mod test {
                 wasi_nn: false,
                 wasi_threads: false,
                 wasi_http: false,
+                wasi_crypto: false,
             }
         );
     }

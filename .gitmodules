@@ -20,3 +20,6 @@
 	path = tests/wasi_testsuite/wasi-common
 	url = https://github.com/WebAssembly/wasi-testsuite.git
 	branch = prod/testsuite-base
+[submodule "ext/wasi-crypto-host-functions"]
+	path = ext/wasi-crypto-host-functions
+	url = https://github.com/wasm-crypto/wasi-crypto-host-functions.git

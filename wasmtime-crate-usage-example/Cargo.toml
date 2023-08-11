@@ -1,0 +1,10 @@
+[package]
+name = "wasmtime-usage-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.44"
+wasmtime = "11.0.1"
+wasmtime-wasi = "11.0.1"
+wasi-crypto = { version = "0.1", features = ["wasmtime"] }

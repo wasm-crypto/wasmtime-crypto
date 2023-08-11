@@ -19,3 +19,12 @@ The resulting executable will be in the `target/release` directory.
 ```sh
 wasmtime run --wasi-modules experimental-wasi-crypto module.wasm
 ```
+
+## WASI-Crypto when wasmtime is used as a Rust dependency
+
+In Rust applications, `wasi-crypto` can be used directly with
+the stock `wasmtime` crate downloaded from `crates.io`.
+
+See the [`wasmtime-crate-usage-example`](wasmtime-crate-usage-example)
+directory for an example that runs a WebAssembly module with WASI
+and WASI-Crypto.

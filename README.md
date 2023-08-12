@@ -14,6 +14,20 @@ cargo build --release
 
 The resulting executable will be in the `target/release` directory.
 
+The library (`libwasmtime.so`, `libwasmtime.dylib`, `libwasmtime.a`)
+can be compiled with the following command:
+
+```sh
+cargo build --release -p wasmtime-c-api
+```
+
+The files can be found in `target/release` and
+`crates/c-api/wasm-c-api/include`.
+
+In this build, the function to enable WASI (`wasmtime_linker_define_wasi`)
+will also enable the crypto extensions, so that no code change to
+existing code depending on `libwasmtime` is necessary.
+
 ## Usage
 
 ```sh

@@ -31,10 +31,11 @@ wasi-cap-std-sync = { workspace = true, optional = true }
 wasmtime-wasi = { workspace = true, optional = true }
 cap-std = { workspace = true, optional = true }
 wasi-common = { workspace = true, optional = true }
+wasi-crypto = { workspace = true, optional = true }
 
 [features]
 default = ['jitdump', 'wat', 'wasi', 'cache', 'parallel-compilation']
 jitdump = ["wasmtime/jitdump"]
 cache = ["wasmtime/cache"]
 parallel-compilation = ['wasmtime/parallel-compilation']
-wasi = ['wasi-cap-std-sync', 'wasmtime-wasi', 'cap-std', 'wasi-common']
+wasi = ['wasi-cap-std-sync', 'wasmtime-wasi', 'cap-std', 'wasi-common', 'wasi-crypto']

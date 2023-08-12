@@ -2,6 +2,7 @@ use crate::{wasm_engine_t, wasmtime_error_t, wasmtime_val_t, ForeignData};
 use std::cell::UnsafeCell;
 use std::ffi::c_void;
 use std::sync::Arc;
+use wasi_crypto::wasmtime_interfaces::WasiCryptoCtx;
 use wasmtime::{
     AsContext, AsContextMut, Store, StoreContext, StoreContextMut, StoreLimits, StoreLimitsBuilder,
     UpdateDeadline, Val,
@@ -73,6 +74,9 @@ pub struct StoreData {
     #[cfg(feature = "wasi")]
     pub(crate) wasi: Option<wasmtime_wasi::WasiCtx>,
 
+    #[cfg(feature = "wasi")]
+    pub(crate) wasi_crypto: Option<Arc<WasiCryptoCtx>>,
+
     /// Temporary storage for usage during a wasm->host call to store values
     /// in a slice we pass to the C API.
     pub hostcall_val_storage: Vec<wasmtime_val_t>,
@@ -98,6 +102,7 @@ pub extern "C" fn wasmtime_store_new(
                 foreign: ForeignData { data, finalizer },
                 #[cfg(feature = "wasi")]
                 wasi: None,
+                wasi_crypto: None,
                 hostcall_val_storage: Vec::new(),
                 wasm_val_storage: Vec::new(),
                 store_limits: StoreLimits::default(),
@@ -200,6 +205,7 @@ pub extern "C" fn wasmtime_context_set_wasi(
 ) -> Option<Box<wasmtime_error_t>> {
     crate::handle_result(wasi.into_wasi_ctx(), |wasi| {
         context.data_mut().wasi = Some(wasi);
+        context.data_mut().wasi_crypto = Some(Arc::new(WasiCryptoCtx::new()));
     })
 }
 

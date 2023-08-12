@@ -5,6 +5,8 @@ use crate::{
 use std::ffi::c_void;
 use std::mem::MaybeUninit;
 use std::str;
+use std::sync::Arc;
+use wasi_crypto::wasmtime_interfaces::WasiCryptoCtx;
 use wasmtime::{Func, Instance, Linker};
 
 #[repr(C)]
@@ -97,18 +99,43 @@ pub unsafe extern "C" fn wasmtime_linker_define_func_unchecked(
 }
 
 #[cfg(feature = "wasi")]
+fn add_wasi_crypto_to_linker<T>(
+    linker: &mut Linker<T>,
+    get_cx: impl Fn(&mut T) -> &mut WasiCryptoCtx + Send + Sync + Copy + 'static,
+) -> anyhow::Result<()> {
+    use wasi_crypto::wasmtime_interfaces::wasi_modules as w;
+
+    w::wasi_ephemeral_crypto_common::add_to_linker(linker, get_cx)?;
+    w::wasi_ephemeral_crypto_asymmetric_common::add_to_linker(linker, get_cx)?;
+    w::wasi_ephemeral_crypto_signatures::add_to_linker(linker, get_cx)?;
+    w::wasi_ephemeral_crypto_symmetric::add_to_linker(linker, get_cx)?;
+
+    Ok(())
+}
+
+#[cfg(feature = "wasi")]
 #[no_mangle]
 pub extern "C" fn wasmtime_linker_define_wasi(
     linker: &mut wasmtime_linker_t,
 ) -> Option<Box<wasmtime_error_t>> {
-    handle_result(
+    let res = handle_result(
         wasmtime_wasi::add_to_linker(&mut linker.linker, |cx| {
             cx.wasi.as_mut().expect(
                 "failed to define WASI on linker; did you set a WASI configuration in the store?",
             )
         }),
         |_linker| (),
-    )
+    );
+    if res.is_none() {
+        return res;
+    }
+    let res = handle_result(
+        add_wasi_crypto_to_linker(&mut linker.linker, |cx| {
+            Arc::get_mut(cx.wasi_crypto.as_mut().unwrap()).unwrap()
+        }),
+        |_linker| (),
+    );
+    res
 }
 
 #[no_mangle]

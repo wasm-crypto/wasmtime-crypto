@@ -52,14 +52,24 @@ rustix = { workspace = true, features = ["mm", "param"] }
 
 [dev-dependencies]
 # depend again on wasmtime to activate its default features for tests
-wasmtime = { workspace = true, features = ['component-model', 'async', 'default', 'winch'] }
+wasmtime = { workspace = true, features = [
+  'component-model',
+  'async',
+  'default',
+  'winch',
+] }
 env_logger = { workspace = true }
 log = { workspace = true }
 filecheck = { workspace = true }
 tempfile = { workspace = true }
 test-programs = { path = "crates/test-programs" }
 wasmtime-runtime = { workspace = true }
-tokio = { version = "1.8.0", features = ["rt", "time", "macros", "rt-multi-thread"] }
+tokio = { version = "1.8.0", features = [
+  "rt",
+  "time",
+  "macros",
+  "rt-multi-thread",
+] }
 wast = { workspace = true }
 criterion = "0.5.0"
 num_cpus = "1.13.0"
@@ -114,7 +124,7 @@ members = [
 ]
 exclude = [
   'crates/wasi-common/WASI/tools/witx-cli',
-  'docs/rust_wasi_markdown_parser'
+  'docs/rust_wasi_markdown_parser',
 ]
 
 [workspace.package]
@@ -249,7 +259,9 @@ indexmap = "2.0.0"
 pretty_env_logger = "0.5.0"
 syn = "2.0.25"
 
-wasi-crypto = { path = "ext/wasi-crypto-host-functions/rust", version = "0.1", features = ["wasmtime"] }
+wasi-crypto = { path = "ext/wasi-crypto-host-functions/rust", version = "0.1", features = [
+  "wasmtime",
+] }
 
 [features]
 default = [
@@ -267,13 +279,16 @@ vtune = ["wasmtime/vtune"]
 wasi-nn = ["dep:wasmtime-wasi-nn"]
 wasi-threads = ["dep:wasmtime-wasi-threads"]
 wasi-http = ["dep:wasmtime-wasi-http"]
-pooling-allocator = ["wasmtime/pooling-allocator", "wasmtime-cli-flags/pooling-allocator"]
+pooling-allocator = [
+  "wasmtime/pooling-allocator",
+  "wasmtime-cli-flags/pooling-allocator",
+]
 all-arch = ["wasmtime/all-arch"]
 posix-signals-on-macos = ["wasmtime/posix-signals-on-macos"]
 component-model = [
   "wasmtime/component-model",
   "wasmtime-wast/component-model",
-  "wasmtime-cli-flags/component-model"
+  "wasmtime-cli-flags/component-model",
 ]
 winch = ["wasmtime/winch"]
 

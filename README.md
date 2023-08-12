@@ -1,4 +1,4 @@
-# Wasmtime, with crypto extensions
+# Wasmtime and libwasmtime, with crypto extensions
 
 The currently stable version of the Wasmtime WebAssembly runtime,
 with support for the

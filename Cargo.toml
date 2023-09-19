@@ -1,5 +1,5 @@
 [package]
-name = "wasmtime-cli"
+name = "wasmtime-crypto"
 version.workspace = true
 authors.workspace = true
 description = "Command-line interface for Wasmtime with the crypto extensions"

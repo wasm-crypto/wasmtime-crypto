@@ -4034,56 +4034,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmtime-cli"
-version = "12.0.2"
-dependencies = [
- "anyhow",
- "async-trait",
- "bstr",
- "clap",
- "component-macro-test",
- "component-test-util",
- "criterion",
- "env_logger 0.10.0",
- "filecheck",
- "humantime 2.1.0",
- "libc",
- "listenfd",
- "log",
- "memchr",
- "num_cpus",
- "once_cell",
- "rayon",
- "rustix",
- "serde",
- "serde_json",
- "target-lexicon",
- "tempfile",
- "test-programs",
- "tokio",
- "walkdir",
- "wasi-crypto",
- "wasm-encoder 0.31.1",
- "wasmparser 0.110.0",
- "wasmtime",
- "wasmtime-cache",
- "wasmtime-cli-flags",
- "wasmtime-component-util",
- "wasmtime-cranelift",
- "wasmtime-environ",
- "wasmtime-explorer",
- "wasmtime-runtime",
- "wasmtime-wasi",
- "wasmtime-wasi-http",
- "wasmtime-wasi-nn",
- "wasmtime-wasi-threads",
- "wasmtime-wast",
- "wast 62.0.1",
- "wat",
- "windows-sys 0.48.0",
-]
-
-[[package]]
 name = "wasmtime-cli-flags"
 version = "12.0.2"
 dependencies = [
@@ -4149,6 +4099,56 @@ dependencies = [
  "object 0.31.1",
  "target-lexicon",
  "wasmtime-environ",
+]
+
+[[package]]
+name = "wasmtime-crypto"
+version = "12.0.2"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bstr",
+ "clap",
+ "component-macro-test",
+ "component-test-util",
+ "criterion",
+ "env_logger 0.10.0",
+ "filecheck",
+ "humantime 2.1.0",
+ "libc",
+ "listenfd",
+ "log",
+ "memchr",
+ "num_cpus",
+ "once_cell",
+ "rayon",
+ "rustix",
+ "serde",
+ "serde_json",
+ "target-lexicon",
+ "tempfile",
+ "test-programs",
+ "tokio",
+ "walkdir",
+ "wasi-crypto",
+ "wasm-encoder 0.31.1",
+ "wasmparser 0.110.0",
+ "wasmtime",
+ "wasmtime-cache",
+ "wasmtime-cli-flags",
+ "wasmtime-component-util",
+ "wasmtime-cranelift",
+ "wasmtime-environ",
+ "wasmtime-explorer",
+ "wasmtime-runtime",
+ "wasmtime-wasi",
+ "wasmtime-wasi-http",
+ "wasmtime-wasi-nn",
+ "wasmtime-wasi-threads",
+ "wasmtime-wast",
+ "wast 62.0.1",
+ "wat",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

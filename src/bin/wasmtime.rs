@@ -5,7 +5,7 @@
 
 use anyhow::Result;
 use clap::{error::ErrorKind, Parser};
-use wasmtime_cli::commands::{
+use wasmtime_crypto::commands::{
     CompileCommand, ConfigCommand, ExploreCommand, RunCommand, SettingsCommand, WastCommand,
 };
 
